@@ -1,13 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config(); // Import dotenv and load .env file
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://mishukinfo09:2rfCcthiqE9uQrlL@cluster0.ldyg2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true })
+// Connect to MongoDB using environment variable
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB Connected'))
     .catch((err) => console.log(err));
 
@@ -54,10 +55,9 @@ app.post('/api/add-cost', async (req, res) => {
         const wallet = await Wallet.findOne();
 
         if (wallet) {
-            // Update wallet data
             wallet.costs.push({ costName, costAmount });
             wallet.totalCost += costAmount;
-            wallet.totalAmount -= costAmount; // Deduct cost from totalAmount
+            wallet.totalAmount -= costAmount;
             await wallet.save();
         }
 
